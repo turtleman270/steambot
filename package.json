@@ -1,0 +1,27 @@
+{
+  "name": "steambot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bot.js",
+  "dependencies": {
+    "axios": "^0.26.1",
+    "steam-totp": "^2.1.1",
+    "steam-tradeoffer-manager": "^2.10.4",
+    "steam-user": "^4.21.0",
+    "steamcommunity": "^3.44.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/turtleman270/steambot.git"
+  },
+  "author": "anthony",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/turtleman270/steambot/issues"
+  },
+  "homepage": "https://github.com/turtleman270/steambot#readme"
+}
