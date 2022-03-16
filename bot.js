@@ -2,7 +2,8 @@ const SteamUser = require('steam-user');
 const SteamTotp = require('steam-totp');
 const SteamCommunity = require('steamcommunity');
 const TradeOfferManager = require('steam-tradeoffer-manager');
-const Prices = require('./prices.json');
+const axios = require('axios')
+
 
 const client = new SteamUser();
 const community = new SteamCommunity();
@@ -30,14 +31,28 @@ client.on('webSession', (sessionid, cookies) => {
   community.setCookies(cookies);
   community.startConfirmationChecker(10000, config.identity_secret);
 
+
+
 });
 
-function getItemValue(item) {
-	if(item.appid !== 730){
+class ItemWithPrice {
+  constructor(item, price) {
+    this.item = item;
+    this.price = price;
+  }
+}
+
+function getItemValue(item, prices) {
+	console.log(item.appid);
+	console.log(item['appid']);
+	if(item.appid !== 730 && item.appid !== '730'){
 		return 0;
 	}
-	if(Prices[item.name]){
-		return Prices[item.name];
+	if(prices[item.name]){
+		return parseInt(prices[item.name]);
+	}
+	if(prices["Default"]){
+		return parseInt(prices["Default"]);
 	}
   return 1;
 }
@@ -69,15 +84,39 @@ function declineOffer(offer){
 		}
 	});
 }
-function tryCountering(offer){
-	let counterOffer = offer.counter()
+
+const getMyInventory = () => {
+	return new Promise((resolve, reject) => {
+			manager.loadInventory(730, 2, true, (err, inventory) => {
+			resolve(inventory);
+		});
+	})
+}
+
+async function tryCountering(offer, prices){
+
+
+	let myInventory = await getMyInventory();
+	//console.log(myInventory);
+	let myItems = [];
+	for (let i = 0; i < myInventory.length; i++) {
+		myItems.push(new ItemWithPrice(myInventory[i], getItemValue(myInventory[i], prices)));
+	}
+	myItems.sort((a, b) => {
+		return a['price']-b['price'];
+ 	});
+	for (let i = 0; i < myItems.length; i++) {
+		console.log(myItems[i]);
+	}
+
+	let counterOffer = offer.counter();
 	let theirOfferValue = 0;
 	let myOfferValue = 0;
 	for (let i = 0; i < counterOffer.itemsToGive.length; i++) {
-		myOfferValue += getItemValue(counterOffer.itemsToGive[i]);
+		myOfferValue += getItemValue(counterOffer.itemsToGive[i], prices);
 	}
 	for (let i = 0; i < counterOffer.itemsToReceive.length; i++) {
-		theirOfferValue += getItemValue(counterOffer.itemsToReceive[i]);
+		theirOfferValue += getItemValue(counterOffer.itemsToReceive[i], prices);
 	}
 	let itemsToGive = counterOffer.itemsToGive;
 	let index = 0;
@@ -85,7 +124,7 @@ function tryCountering(offer){
 		let itemToRemove = counterOffer.itemsToGive[0];
 		console.log("removing item "+itemToRemove.name);
 		counterOffer.removeMyItem(itemToRemove);
-		myOfferValue -= getItemValue(itemToRemove);
+		myOfferValue -= getItemValue(itemToRemove, prices);
 		index++;
 	}
 	counterOffer.setMessage("Value of your items: "+theirOfferValue+", Value of my items: "+myOfferValue);
@@ -97,7 +136,7 @@ function tryCountering(offer){
 		}
 	});
 }
-function processOffer(offer){
+async function processOffer(offer){
 	console.log('Offer came in');
 	//console.log(offer);
 	if ( offer.isGlitched() || offer.state === 11){
@@ -117,15 +156,28 @@ function processOffer(offer){
 		return;
 	}
 
+	console.log("getting prices");
+	const prices = await axios
+	  .get('https://raw.githubusercontent.com/SteamSwapperBot/csgo/main/prices.json')
+	  .then(res => {
+	    return res.data;
+	  })
+	  .catch(error => {
+	    console.error(error)
+	  })
+	  console.log(prices);
+		console.log(prices['Default'])
+		console.log(prices['Prisma Case'])
+
 	let theirOfferValue = 0;
 	let myOfferValue = 0;
 	for (let i = 0; i < offer.itemsToGive.length; i++) {
-		myOfferValue += getItemValue(offer.itemsToGive[i]);
+		myOfferValue += getItemValue(offer.itemsToGive[i], prices);
 	}
 	for (let i = 0; i < offer.itemsToReceive.length; i++) {
-		theirOfferValue += getItemValue(offer.itemsToReceive[i]);
+		theirOfferValue += getItemValue(offer.itemsToReceive[i], prices);
 	}
-	//console.log(offer);
+	console.log(offer);
 	console.log("Their offer "+theirOfferValue);
 	console.log("My offer "+myOfferValue);
 	//console.log("I should "+ (theirOfferValue>myOfferValue?"accept":"reject"));
@@ -136,7 +188,7 @@ function processOffer(offer){
 		return;
 	}
 	else{
-		tryCountering(offer);
+		tryCountering(offer, prices);
 		return;
 	}
 }
