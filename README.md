@@ -19,3 +19,6 @@ Then deploy your container, but make sure it doesn't go public because it contai
 ### Tests
 To run tests  
 `npm run test`
+
+### Trade with this bot  
+[Trade link](https://steamcommunity.com/tradeoffer/new/?partner=1255631940&token=DaZNmDTE)
