@@ -1,5 +1,8 @@
 # steambot
 
+![unit tests](https://github.com/turtleman270/steambot/actions/workflows/node.js.yml/badge.svg)
+
+
 ### Setup
 Create a config.json file with the proper credentials  
 Install dependencies  
