@@ -2,8 +2,6 @@ const SteamUser = require('steam-user');
 const SteamTotp = require('steam-totp');
 const SteamCommunity = require('steamcommunity');
 const TradeOfferManager = require('steam-tradeoffer-manager');
-const axios = require('axios')
-
 
 const client = new SteamUser();
 const community = new SteamCommunity();
@@ -12,7 +10,10 @@ const manager = new TradeOfferManager({
 	community: community,
 	language: 'en'
 });
-const config = require('./config.json')
+
+const util = require('./utils.js');
+const config = require('./config.json');
+const prices = require('./prices.json');
 
 const logOnOptions = {
   accountName: config.username,
@@ -30,41 +31,10 @@ client.on('webSession', (sessionid, cookies) => {
 
   community.setCookies(cookies);
   community.startConfirmationChecker(10000, config.identity_secret);
-
-
-
 });
 
-class ItemWithPrice {
-  constructor(item, price) {
-    this.item = item;
-    this.price = price;
-  }
-}
 
-function getItemValue(item, prices) {
-	console.log(item.appid);
-	console.log(item['appid']);
-	if(item.appid !== 730 && item.appid !== '730'){
-		return 0;
-	}
-	if(prices[item.name]){
-		return parseInt(prices[item.name]);
-	}
-	if(prices["Default"]){
-		return parseInt(prices["Default"]);
-	}
-  return 1;
-}
 
-function containsNonCsItems(offer){
-	for (let i = 0; i < offer.itemsToGive.length; i++) {
-		if(offer.itemsToGive[i].appid !== 730){
-			return true;
-		}
-	}
-	return false;
-}
 
 function acceptOffer(offer){
 	offer.accept((err, status) => {
@@ -74,6 +44,7 @@ function acceptOffer(offer){
 			console.log(`Accepted offer. Status: ${status}.`);
 		}
 	});
+	return "accepted";
 }
 function declineOffer(offer){
 	offer.decline((err, status) => {
@@ -83,6 +54,7 @@ function declineOffer(offer){
 			console.log(`Rejected offer. Status: ${status}.`);
 		}
 	});
+	return "rejected";
 }
 
 const getMyInventory = () => {
@@ -94,102 +66,71 @@ const getMyInventory = () => {
 }
 
 async function tryCountering(offer, prices){
-
-
 	let myInventory = await getMyInventory();
 	//console.log(myInventory);
-	let myItems = [];
 	for (let i = 0; i < myInventory.length; i++) {
-		myItems.push(new ItemWithPrice(myInventory[i], getItemValue(myInventory[i], prices)));
+		myInventory[i].price =  util.getItemValue(myInventory[i], prices);
 	}
-	myItems.sort((a, b) => {
-		return a['price']-b['price'];
+	myInventory.sort((a, b) => {
+		return b.price-a.price;
  	});
-	for (let i = 0; i < myItems.length; i++) {
-		console.log(myItems[i]);
-	}
+	//for (let i = 0; i < myInventory.length; i+=5) {
+	//	console.log(myInventory[i]);
+	//}
 
 	let counterOffer = offer.counter();
-	let theirOfferValue = 0;
-	let myOfferValue = 0;
-	for (let i = 0; i < counterOffer.itemsToGive.length; i++) {
-		myOfferValue += getItemValue(counterOffer.itemsToGive[i], prices);
-	}
-	for (let i = 0; i < counterOffer.itemsToReceive.length; i++) {
-		theirOfferValue += getItemValue(counterOffer.itemsToReceive[i], prices);
-	}
-	let itemsToGive = counterOffer.itemsToGive;
-	let index = 0;
-	while(myOfferValue>=theirOfferValue){
-		let itemToRemove = counterOffer.itemsToGive[0];
-		console.log("removing item "+itemToRemove.name);
-		counterOffer.removeMyItem(itemToRemove);
-		myOfferValue -= getItemValue(itemToRemove, prices);
-		index++;
-	}
-	counterOffer.setMessage("Value of your items: "+theirOfferValue+", Value of my items: "+myOfferValue);
-	counterOffer.send((err, status) => {
-		if (err) {
-			console.log(err);
-		} else {
-			console.log(`Sent counter offer: ${status}.`);
+	let myProfit = util.myProfitFromOffer(counterOffer, prices);
+
+	for (let i = 0; i < myInventory.length; i++) {
+		if(myProfit<=0){
+			let removed = counterOffer.removeMyItem(myInventory[i]);
+			if(removed){
+				myProfit+=myInventory[i].price;
+			}
 		}
-	});
-}
-async function processOffer(offer){
-	console.log('Offer came in');
-	//console.log(offer);
-	if ( offer.isGlitched() || offer.state === 11){
-		console.log("got a glitched offer");
-		declineOffer(offer);
-	}
-	if(offer.itemsToGive.length == 0){
-		acceptOffer(offer);
-		return;
-	}
-	if(offer.itemsToReceive.length == 0){
-		declineOffer(offer);
-		return;
-	}
-	if(containsNonCsItems(offer)){
-		declineOffer(offer);
-		return;
+		else if(myProfit>myInventory[i].price){
+			let added = counterOffer.addMyItem(myInventory[i]);
+			if(added){
+				myProfit-=myInventory[i].price;
+			}
+		}
 	}
 
-	console.log("getting prices");
-	const prices = await axios
-	  .get('https://raw.githubusercontent.com/SteamSwapperBot/csgo/main/prices.json')
-	  .then(res => {
-	    return res.data;
-	  })
-	  .catch(error => {
-	    console.error(error)
-	  })
-	  console.log(prices);
-		console.log(prices['Default'])
-		console.log(prices['Prisma Case'])
 
-	let theirOfferValue = 0;
-	let myOfferValue = 0;
-	for (let i = 0; i < offer.itemsToGive.length; i++) {
-		myOfferValue += getItemValue(offer.itemsToGive[i], prices);
-	}
-	for (let i = 0; i < offer.itemsToReceive.length; i++) {
-		theirOfferValue += getItemValue(offer.itemsToReceive[i], prices);
-	}
-	console.log(offer);
-	console.log("Their offer "+theirOfferValue);
-	console.log("My offer "+myOfferValue);
-	//console.log("I should "+ (theirOfferValue>myOfferValue?"accept":"reject"));
-
-
-	if (theirOfferValue>myOfferValue){
-		acceptOffer(offer);
-		return;
+	counterOffer.setMessage("Value of your items: "+util.getTheirItemValue(counterOffer, prices)+
+													", Value of my items: "+(util.getTheirItemValue(counterOffer, prices)-myProfit));
+	if(util.myProfitFromOffer(counterOffer, prices)>0){
+		counterOffer.send((err, status) => {
+			if (err) {
+				console.log(err);
+			} else {
+				console.log(`Sent counter offer: ${status}.`);
+			}
+		});
+		return "countered";
 	}
 	else{
-		tryCountering(offer, prices);
-		return;
+		return declineOffer(offer);
+	}
+}
+
+
+
+async function processOffer(offer){
+	console.log('Offer came in');
+	util.printOffer(offer);
+	if ( util.shouldInstaDecline(offer)){
+		return declineOffer(offer);
+	}
+	if(util.shouldInstaAccept(offer)){
+		return acceptOffer(offer);
+	}
+
+	if(util.myProfitFromOffer(offer, prices)>0){
+		return acceptOffer(offer);
+	}
+	else{
+		return tryCountering(offer, prices);
 	}
 }
 
@@ -197,5 +138,3 @@ async function processOffer(offer){
 manager.on('newOffer', offer => {
 	processOffer(offer);
 });
-//node bot.js
-//docker build -t turtleman270/steambot:1.0 .

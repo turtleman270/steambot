@@ -10,9 +10,11 @@
     "steam-user": "^4.21.0",
     "steamcommunity": "^3.44.0"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "jest": "^27.5.1"
+  },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "jest"
   },
   "repository": {
     "type": "git",
