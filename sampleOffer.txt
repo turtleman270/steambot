@@ -1,0 +1,126 @@
+{
+  partner: SteamID { universe: 1, type: 1, instance: 1, accountid: 123456 },
+  id: '5081981733',
+  message: '',
+  state: 2,
+  itemsToGive: [],
+  itemsToReceive: [
+    EconItem {
+      appid: 730,
+      contextid: '2',
+      assetid: '24873774200',
+      classid: '4302203066',
+      instanceid: '188530139',
+      amount: 1,
+      missing: false,
+      est_usd: '1',
+      icon_url: '-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXQ9QVcJY8gulRPQV6CF7b9mMrFXxNwcFNT4r_wclM01_XLJzwTuIXuloONxqShYOLVlW4HupUi2LnD99ykxkS6rKZXLL7r',
+      icon_url_large: '-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXQ9QVcJY8gulRPQV6CF7b9mMrFX2J4JBZQs_T3LQMxhqvJJmRHtIjlwYbfw6Cia-7SlzhVvsMkieiS9Nn021fh_UA5fSmtcyLGlgbF',
+      icon_drag_url: '',
+      name: 'Sticker | Evil Geniuses | 2020 RMR',
+      market_hash_name: 'Sticker | Evil Geniuses | 2020 RMR',
+      market_name: 'Sticker | Evil Geniuses | 2020 RMR',
+      name_color: 'D2D2D2',
+      background_color: '',
+      type: 'High Grade Sticker',
+      tradable: true,
+      marketable: true,
+      commodity: true,
+      market_tradable_restriction: 7,
+      fraudwarnings: [],
+      descriptions: [Array],
+      owner_descriptions: [],
+      actions: [Array],
+      market_actions: [Array],
+      tags: [Array],
+      id: '24873774200',
+      owner_actions: [],
+      market_marketable_restriction: 0
+    },
+    EconItem {
+      appid: 730,
+      contextid: '2',
+      assetid: '24873774206',
+      classid: '4302203066',
+      instanceid: '188530139',
+      amount: 1,
+      missing: false,
+      est_usd: '1',
+      icon_url: '-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXQ9QVcJY8gulRPQV6CF7b9mMrFXxNwcFNT4r_wclM01_XLJzwTuIXuloONxqShYOLVlW4HupUi2LnD99ykxkS6rKZXLL7r',
+      icon_url_large: '-9a81dlWLwJ2UUGcVs_nsVtzdOEdtWwKGZZLQHTxDZ7I56KU0Zwwo4NUX4oFJZEHLbXQ9QVcJY8gulRPQV6CF7b9mMrFX2J4JBZQs_T3LQMxhqvJJmRHtIjlwYbfw6Cia-7SlzhVvsMkieiS9Nn021fh_UA5fSmtcyLGlgbF',
+      icon_drag_url: '',
+      name: 'Sticker | Evil Geniuses | 2020 RMR',
+      market_hash_name: 'Sticker | Evil Geniuses | 2020 RMR',
+      market_name: 'Sticker | Evil Geniuses | 2020 RMR',
+      name_color: 'D2D2D2',
+      background_color: '',
+      type: 'High Grade Sticker',
+      tradable: true,
+      marketable: true,
+      commodity: true,
+      market_tradable_restriction: 7,
+      fraudwarnings: [],
+      descriptions: [Array],
+      owner_descriptions: [],
+      actions: [Array],
+      market_actions: [Array],
+      tags: [Array],
+      id: '24873774206',
+      owner_actions: [],
+      market_marketable_restriction: 0
+    }
+  ],
+  isOurOffer: false,
+  created: 2022-03-10T02:53:38.000Z,
+  updated: 2022-03-10T02:53:47.000Z,
+  expires: 2022-03-24T02:53:38.000Z,
+  tradeID: null,
+  fromRealTimeTrade: false,
+  confirmationMethod: 0,
+  escrowEnds: null,
+  rawJson: '{\n' +
+    '\t"tradeofferid": "508198133",\n' +
+    '\t"accountid_other": 123456,\n' +
+    '\t"message": "",\n' +
+    '\t"expiration_time": 1648090418,\n' +
+    '\t"trade_offer_state": 2,\n' +
+    '\t"items_to_receive": [\n' +
+    '\t\t{\n' +
+    '\t\t\t"appid": 730,\n' +
+    '\t\t\t"contextid": "2",\n' +
+    '\t\t\t"assetid": "24873774200",\n' +
+    '\t\t\t"classid": "4302203066",\n' +
+    '\t\t\t"instanceid": "188530139",\n' +
+    '\t\t\t"amount": "1",\n' +
+    '\t\t\t"missing": false,\n' +
+    '\t\t\t"est_usd": "1"\n' +
+    '\t\t},\n' +
+    '\t\t{\n' +
+    '\t\t\t"appid": 730,\n' +
+    '\t\t\t"contextid": "2",\n' +
+    '\t\t\t"assetid": "24873774206",\n' +
+    '\t\t\t"classid": "4302203066",\n' +
+    '\t\t\t"instanceid": "188530139",\n' +
+    '\t\t\t"amount": "1",\n' +
+    '\t\t\t"missing": false,\n' +
+    '\t\t\t"est_usd": "1"\n' +
+    '\t\t},\n' +
+    '\t\t{\n' +
+    '\t\t\t"appid": 730,\n' +
+    '\t\t\t"contextid": "2",\n' +
+    '\t\t\t"assetid": "24873809259",\n' +
+    '\t\t\t"classid": "4638743437",\n' +
+    '\t\t\t"instanceid": "188530139",\n' +
+    '\t\t\t"amount": "1",\n' +
+    '\t\t\t"missing": false,\n' +
+    '\t\t\t"est_usd": "1"\n' +
+    '\t\t}\n' +
+    '\t],\n' +
+    '\t"is_our_offer": false,\n' +
+    '\t"time_created": 1646880818,\n' +
+    '\t"time_updated": 1646880827,\n' +
+    '\t"from_real_time_trade": false,\n' +
+    '\t"escrow_end_date": 0,\n' +
+    '\t"confirmation_method": 0\n' +
+    '}'
+}
